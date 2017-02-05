@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net"
+	"bufio"
+	"time"
 )
 
 func main() {
@@ -10,5 +12,17 @@ func main() {
 
 	conn, _ := net.Dial("tcp", ":8080")
 
-	print(conn)
+	fmt.Print(conn)
+
+	writer := bufio.NewWriter(conn)
+
+	reader := bufio.NewScanner(bufio.NewReader(conn))
+
+	time.Sleep(5000)
+
+	writer.WriteString("me")
+
+	str := reader.Scan()
+
+	fmt.Println(str)
 }

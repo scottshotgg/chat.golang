@@ -1,11 +1,30 @@
+// TODO: need to make asynchronous read and write
+
 package main
 
 import (
 	"fmt"
 	"net"
 	"bufio"
-	"time"
+	"os"
+	//"time"
 )
+
+func input(r *bufio.Reader) {
+	for {
+		str, _ := r.ReadString('\n')
+		fmt.Println(str)
+	}
+}
+
+func output(w *bufio.Writer) {
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		w.WriteString(text)
+		w.Flush()
+	}
+}
 
 func main() {
 	fmt.Println("I am the client")
@@ -16,13 +35,15 @@ func main() {
 
 	writer := bufio.NewWriter(conn)
 
-	reader := bufio.NewScanner(bufio.NewReader(conn))
+	reader := bufio.NewReader(conn)
 
-	time.Sleep(5000)
+	//time.Sleep(5000)
 
-	writer.WriteString("me")
+	go input(reader)
 
-	str := reader.Scan()
+	go output(writer)
 
-	fmt.Println(str)
+	for {
+
+	}
 }

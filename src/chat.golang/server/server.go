@@ -89,6 +89,7 @@ func makeVars() {
 
 func parseCommand(client Client) {
 
+	// need to make this end with the other channels
 	for {
 		command := strings.Fields(<-commandChan)
 		fmt.Println(command)
@@ -106,7 +107,7 @@ func parseCommand(client Client) {
 				// submit this to a database thread
 			default:
 				fmt.Println("chat")
-				client.WriteAll(strings.Join(command[1:], " "))
+				client.WriteAll(strings.Join(command, " "))
 		}
 	}
 }

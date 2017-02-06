@@ -95,16 +95,20 @@ func parseCommand(client Client) {
 		fmt.Println(command)
 
 		switch command[0] {
-			case "save":
+			case ".save":
 				fmt.Println("save")
 				// this will go to a db
-			case "workout":
+			case ".workout":
 				// workout [day/date; relative;absolute] excersise sets reps weight
 				fmt.Println("workout")
 				// later this will use a username and passwd
 				// use this later: https://github.com/tealeg/xlsx
 
 				// submit this to a database thread
+			case ".close":
+				fmt.Println("close")
+				break
+				
 			default:
 				fmt.Println("chat")
 				client.WriteAll(strings.Join(command, " "))
@@ -124,13 +128,11 @@ func listenToClient(client Client) {
 				line, errInt = client.Read()
 				fmt.Println(line)
 				client.PrintOut(line)
-				fmt.Println(strings.ToUpper(line))
-
+				//fmt.Println(strings.ToUpper(line))
 				commandChan <- line
 
-
-
 			case 0: 
+				commandChan <- ".close"
 				client.PrintOut("Client closed the connection")
 				return
 			default:

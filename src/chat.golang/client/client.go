@@ -7,7 +7,7 @@ import (
 	"net"
 	"bufio"
 	"os"
-	//"time"
+	"time"
 )
 
 func input(r *bufio.Reader) {
@@ -29,9 +29,24 @@ func output(w *bufio.Writer) {
 }
 
 func main() {
-	fmt.Println("I am the client")
+	protocol := "tcp"
+	host := "127.0.0.1"
+	port := "8080"
+	
+	conn, err := net.Dial(protocol, host + ":" + port)
 
-	conn, _ := net.Dial("tcp", ":8080")
+	if err != nil {
+		for i := 0; i < 10; i++ {
+			conn, err = net.Dial(protocol, host + ":" + port)
+
+			fmt.Println("Could not get connection, trying again in 2 seconds...")
+			time.Sleep(2 * time.Second)
+		}
+		fmt.Println("Could not connect to the server after 10 tries. Try again later.")
+	}
+
+
+
 
 	fmt.Print(conn)
 

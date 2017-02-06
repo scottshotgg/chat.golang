@@ -1,6 +1,0 @@
-nothing=""
-DEFINE=${1:-nothing}
-
-cpp -P -D$DEFINE -P server.go pserver.go
-
-go run pserver.go

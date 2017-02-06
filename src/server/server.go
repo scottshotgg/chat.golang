@@ -102,7 +102,9 @@ func listenToClient(client client) {
 				fmt.Println(line)
 				client.PrintOut(line)
 				fmt.Println(strings.ToUpper(line))
-				client.Write(strings.ToUpper(line))
+
+				// this could be for the check with the client before we send it out
+				//client.Write(strings.ToUpper(line))
 				
 				// just consider everything for now a server wide message
 				// later make rooms, chats, and a server "objects" holding everything

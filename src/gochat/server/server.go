@@ -97,9 +97,6 @@ func parseCommand(client Client) {
 			case "save":
 				fmt.Println("save")
 				// this will go to a db
-			case "chat":
-				fmt.Println("chat")
-				client.WriteAll(strings.Join(command[1:], " "))
 			case "workout":
 				// workout [day/date; relative;absolute] excersise sets reps weight
 				fmt.Println("workout")
@@ -107,6 +104,9 @@ func parseCommand(client Client) {
 				// use this later: https://github.com/tealeg/xlsx
 
 				// submit this to a database thread
+			default:
+				fmt.Println("chat")
+				client.WriteAll(strings.Join(command[1:], " "))
 		}
 	}
 }
@@ -125,13 +125,6 @@ func listenToClient(client Client) {
 				client.PrintOut(line)
 				fmt.Println(strings.ToUpper(line))
 
-				// this could be for the check with the client before we send it out
-				//client.Write(strings.ToUpper(line))
-				
-				// just consider everything for now a server wide message
-				// later make rooms, chats, and a server "objects" holding everything
-				
-				//	client.WriteAll(strings.ToUpper(line))
 				commandChan <- line
 
 

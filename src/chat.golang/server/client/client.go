@@ -18,17 +18,20 @@ type Client struct {
 }
 
 func (c Client) Read() (string, int) {
-	fmt.Println("waiting for something...")
+	//fmt.Println("waiting for something...")
 	line, err := c.reader.ReadString('\n')
-	fmt.Println("got something!", line, err)
+	//fmt.Println("got something!", line, err)
 	errInt := 1
 
-	if err != nil { 
-		fmt.Println(err.Error())
+	//fmt.Println("this is the error", err.Error())
+	
+	if err == "EOF" { 
+		fmt.Println("EOF", err.Error())
 		// Put these here for now
 		c.conn.Close()
 		errInt = 0
 	}
+		return ".close this thing\n", errInt
 
 	fmt.Println("got here...")
 	//keepListeningChan <- errInt

@@ -12,7 +12,13 @@ import (
 
 func input(r *bufio.Reader) {
 	for {
-		str, _ := r.ReadString('\n')
+		str, err := r.ReadString('\n')
+
+		if err != nil {
+			fmt.Println("Remote host closed the connection")
+			os.Exit(2)
+		}
+
 		fmt.Println(str)
 	}
 }

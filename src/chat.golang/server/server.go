@@ -37,16 +37,19 @@ type Client struct {
 }
 
 func (c Client) Read() (string, int) {
-	fmt.Println("waiting for something...")
+	//fmt.Println("waiting for something...")
 	line, err := c.reader.ReadString('\n')
-	fmt.Println("got something!", line, err)
+	//fmt.Println("got something!", line, err)
 	errInt := 1
 
+	//fmt.Println("this is the error", err.Error())
+	
 	if err != nil { 
-		fmt.Println(err.Error())
+		fmt.Println("EOF", err.Error())
 		// Put these here for now
 		c.conn.Close()
 		errInt = 0
+		return ".close\n", errInt
 	}
 
 	fmt.Println("got here...")
@@ -60,10 +63,9 @@ func (c Client) Write(line string) {
 	c.writer.Flush()
 }
 
-// func (c Client) WriteAll(line string, activeClientMap map[uuid.UUID] Client) {
-func (c Client) WriteAll(line string) {
+func (c Client) WriteAll(line string, activeClientMap map[uuid.UUID] Client) {
 	for _, value := range activeClientMap {	
-		value.writer.WriteString(fmt.Sprintln(c.conn.RemoteAddr(), "::", time.Now().Format("Mon Jan _2 15:04:05 2006"), "::-", line))
+		value.writer.WriteString(fmt.Sprintln(c.conn.RemoteAddr(), " :: ", time.Now().Format("Mon Jan _2 15:04:05 2006"), "::- ", line))
 		value.writer.Flush()
 	}
 }
@@ -87,27 +89,46 @@ func makeVars() {
 	commandChan = 	make(chan string, 10)
 }
 
-func parseCommand(client Client) {
+func findDevices() {
+	
+}
 
+func parseCommand(client Client) {
 	// need to make this end with the other channels
 	for {
-		command := stringns.Fields(<-commandChan)
+		command := strings.Fields(<-commandChan)
 		fmt.Println(command)
+		// command = strings.Fields(<-commandChan)
+		// fmt.Println(command)
+		// command = strings.Fields(<-commandChan)
+		// fmt.Println(command)
+		// command = strings.Fields(<-commandChan)
+		// fmt.Println(command)
 
-		switch command[0] {
-			case "save":
-				fmt.Println("save")
-				// this will go to a db
-			case "workout":
-				// workout [day/date; relative;absolute] excersise sets reps weight
-				fmt.Println("workout")
-				// later this will use a username and passwd
-				// use this later: https://github.com/tealeg/xlsx
+		if command[0] != "" {
+			switch command[0] {
+				case ".save":
+					fmt.Println("save")
+					// this will go to a db
+				case ".workout":
+					// workout [day/date; relative;absolute] excersise sets reps weight
+					fmt.Println("workout")
+					// later this will use a username and passwd
+					// use this later: https://github.com/tealeg/xlsx
+				case ".close":
+					fmt.Println("close")
+					return
 
-				// submit this to a database thread
-			default:
-				fmt.Println("chat")
-				client.WriteAll(strings.Join(command, " "))
+				case ".compute":
+					fmt.Println("finding devices...")
+					// split a gofunc
+					findDevices()
+
+					// submit this to a database thread
+				default:
+					fmt.Println("chat")
+					client.WriteAll(strings.Join(command, " "), activeClientMap)
+			}
 		}
 	}
 }
@@ -122,16 +143,13 @@ func listenToClient(client Client) {
 		switch  errInt {
 			case 1:
 				line, errInt = client.Read()
+				commandChan <- line
 				fmt.Println(line)
 				client.PrintOut(line)
-				fmt.Println(strings.ToUpper(line))
-
-				commandChan <- line
-
-
 
 			case 0: 
 				client.PrintOut("Client closed the connection")
+				commandChan <- ".close"
 				return
 			default:
 				fmt.Println("Percolation is part of the water cycle i guess")
@@ -165,8 +183,8 @@ func accept() {
 					uuid: uuid.NewV4(),
 					//reader: bufio.NewScanner(bufio.NewReader(conn)),
 					 // OS 
-					 // username
-					 // local hash cookie
+					 // [username
+					 					 // l]ocal hash cookie
 					 reader: bufio.NewReader(conn),
 					 writer: bufio.NewWriter(conn)}
 
@@ -176,6 +194,9 @@ func accept() {
 
 // Start here; climb up for readability
 func main() {
+
+	fmt.Println("Server started...")
+
 	DB, err := sql.Open("sqlite3", "workout.db")
 	fmt.Println(DB, err)
 
